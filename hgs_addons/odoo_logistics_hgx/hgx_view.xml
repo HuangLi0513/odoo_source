@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        
+        <menuitem  id="logistics_company" name="物流公司"  sequence="200" />
+        <menuitem id="logistics_hgx" name="自有物流" parent="logistics_company" sequence="10" />
+        <menuitem id="logistics_settings" name="设置" parent="logistics_company" sequence="10" />
+        
+        <record id="logistics_hgx_form" model="ir.ui.view">
+			<field name="name">花果鲜物流</field>
+			<field name="model">logistics.hgx</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="logistics hgx">
+					<header>
+	                    <button name="create_cloud_map" string="创建云图数据表" type="object" groups="base.group_erp_manager"/>
+	                    <button name="update_cloud_map" string="更新云图数据表" type="object" groups="base.group_erp_manager"/>
+	                    <button name="divide_address_4_hgx" string="解析已有地址数据" type="object" groups="base.group_erp_manager"/>
+	                </header>
+					<sheet>
+						<group>
+							<group>
+								<field name="name" class="oe_inline"/>
+							</group>
+							<group>
+								<field name="cloud_map"/>
+								<field name="delivery_terminal">
+									<tree>
+										<field name="name"/>
+										<field name="cloud_map_point"/>
+									</tree>
+								</field>
+							</group>
+						</group>
+						<group>
+							<field name="partner_white_list"/>
+							<field name="partner_black_list"/>
+						</group>
+						<group>
+							<field name="available_areas">
+								<tree editable="bottom">
+									<field name="province_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+									<field name="city_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+									<field name="district_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+								</tree>
+							</field>
+							<field name="unavailable_areas">
+								<tree editable="bottom">
+									<field name="province_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+									<field name="city_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+									<field name="district_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+								</tree>
+							</field>
+						</group>
+					</sheet>
+				</form>
+			</field>
+	 	</record>
+	 	
+		<record id="logistics_hgx_tree" model="ir.ui.view">
+			<field name="name">花果鲜物流</field>
+			<field name="model">logistics.hgx</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="logistics hgx" toolbar="1">
+	            	<field name="name"/>
+				</tree>
+			</field>
+	 	</record>
+	 	
+	 	<record id="action_logistics_hgx" model="ir.actions.act_window">
+			<field name="name">花果鲜物流</field>
+			<field name="res_model">logistics.hgx</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="logistics_hgx_tree" />
+		</record>
+		
+		<menuitem action="action_logistics_hgx" id="menu_logistics_hgx" name="花果鲜物流" parent="odoo_logistics_hgx.logistics_hgx" sequence="10" />
+		
+		
+		<record id="logistics_hgx_delivery_terminal_form" model="ir.ui.view">
+			<field name="name">花果鲜配送点</field>
+			<field name="model">logistics.hgx.delivery_terminal</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="logistics hgx delivery terminal">
+					<header>
+	                    <button name="get_amap_location" string="获取高德坐标" type="object" groups="base.group_erp_manager"/>
+	                    <button name="update_cloud_map_point_info" string="更新云图元素" type="object" groups="base.group_erp_manager"/>
+	                </header>
+					<sheet>
+						<group>
+							<field name="name" class="oe_inline"/>
+							<field name="company_id" string="所属物流" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}" class="oe_inline"/>
+							<field name="cloud_map" class="oe_inline"/>
+							<field name="cloud_map_point" class="oe_inline"/>
+							<field name="province" class="oe_inline" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+		                    <field name="city" class="oe_inline" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+		                    <field name="district" class="oe_inline" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+		                    <field name="detail_address"/>
+		                    <field name="formatted_address" readonly="1"/>
+		                    <field name="amap_location" class="oe_inline" readonly="1"/>
+						</group>
+						<group>
+							<field name="available_areas">
+								<tree editable="bottom">
+									<field name="province_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+									<field name="city_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+									<field name="district_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+								</tree>
+							</field>
+							<field name="unavailable_areas">
+								<tree editable="bottom">
+									<field name="province_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+									<field name="city_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+									<field name="district_id" options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"/>
+								</tree>
+							</field>
+						</group>
+						<group>
+							<!-- <field name="delivery_area" /> -->
+							<field name="available_address">
+								<tree>
+									<field name="name"/>
+									<field name="formatted_address"/>
+									<field name="amap_location"/>
+								</tree>
+							</field>
+						</group>
+					</sheet>
+				</form>
+			</field>
+	 	</record>
+	 	
+		<record id="logistics_hgx_delivery_terminal_tree" model="ir.ui.view">
+			<field name="name">花果鲜配送点</field>
+			<field name="model">logistics.hgx.delivery_terminal</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="logistics hgx delivery terminal" toolbar="1">
+					<field name="name"/>
+					<field name="company_id"/>
+				</tree>
+			</field>
+	 	</record>
+	 	
+	 	<record id="action_logistics_hgx_delivery_terminal" model="ir.actions.act_window">
+			<field name="name">花果鲜配送点</field>
+			<field name="res_model">logistics.hgx.delivery_terminal</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="logistics_hgx_delivery_terminal_tree" />
+		</record>
+		
+		<menuitem action="action_logistics_hgx_delivery_terminal" id="menu_logistics_hgx_delivery_terminal" name="花果鲜配送点" parent="odoo_logistics_hgx.logistics_hgx" sequence="20" />
+        
+    </data>
+</openerp>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_logistics_hgx_config_settings" model="ir.ui.view">
+            <field name="name">logistics hgx config settings</field>
+            <field name="model">logistics.hgx.config.settings</field>
+            <field name="arch" type="xml">
+                <form string="Logistics HGX Configure" class="oe_form_configuration">
+                    <header>
+                        <button string="应用" type="object" name="execute" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" type="object" name="cancel" class="oe_link"/>
+                    </header>
+                    <div>
+                    	<separator string="花果鲜物流"/>
+                    	<group>
+		                   	
+		                </group>
+                    </div>
+                    <div>
+                    	<separator string="高德地图支持"/>
+                    	<group>
+                    		<field name="amap_web_api_address"/>
+                    		<field name="amap_web_service_key"/>
+                    		<field name="amap_web_service_secret"/>
+                    		<field name="amap_yuntu_api_address"/>
+                    	</group>
+                    </div>
+	                
+            	</form>
+        	</field>
+       	</record>
+       	
+       	<record id="action_logistics_hgx_config_settings" model="ir.actions.act_window">
+            <field name="name">花果鲜物流设置</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">logistics.hgx.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+        </record>
+        
+        <menuitem id="menu_logistics_hgx_config_settings" parent="odoo_logistics_hgx.logistics_settings" sequence="100" action="action_logistics_hgx_config_settings"/>
+	</data>
+</openerp>
