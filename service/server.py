@@ -759,15 +759,10 @@ class Worker(object):
             self.start()
             print 'WorkerHTTP start end'
             while self.alive:
-                print '1'
                 self.process_limit()
-                print '2'
                 self.multi.pipe_ping(self.watchdog_pipe)
-                print '3'
                 self.sleep()
-                print '4'
                 self.process_work()
-                print '5'
             _logger.info("Worker (%s) exiting. request_count: %s, registry count: %s.",
                          self.pid, self.request_count,
                          len(openerp.modules.registry.RegistryManager.registries))
