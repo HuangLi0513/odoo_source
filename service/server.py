@@ -566,8 +566,8 @@ class PreforkServer(CommonServer):
         if config['xmlrpc']:
             while len(self.workers_http) < self.population:
                 self.worker_spawn(WorkerHTTP, self.workers_http)
-            if not self.long_polling_pid:
-                self.long_polling_spawn()
+#             if not self.long_polling_pid:
+#                 self.long_polling_spawn()
 #         while len(self.workers_cron) < config['max_cron_threads']:
 #             self.worker_spawn(WorkerCron, self.workers_cron)
 
@@ -710,25 +710,29 @@ class Worker(object):
             self.alive = False
         # Reset the worker if it consumes too much memory (e.g. caused by a memory leak).
         print psutil.Process(os.getpid()).memory_info()
-        rss, vms = psutil.Process(os.getpid()).get_memory_info()
-#         rss, vms, shared, text, lib, data, dirty = psutil.Process(os.getpid()).memory_info()
+#         rss, vms = psutil.Process(os.getpid()).get_memory_info()
+        rss, vms, shared, text, lib, data, dirty = psutil.Process(os.getpid()).memory_info()
+        print 'virtual memory used: %s, virtual memory limit: %s' %(vms, config['limit_memory_soft'])
         if vms > config['limit_memory_soft']:
             _logger.info('Worker (%d) virtual memory limit (%s) reached.', self.pid, vms)
             self.alive = False      # Commit suicide after the request.
 
         # VMS and RLIMIT_AS are the same thing: virtual memory, a.k.a. address space
         soft, hard = resource.getrlimit(resource.RLIMIT_AS)
+        print 'soft: %s, hard: %s' %(soft, hard)
         resource.setrlimit(resource.RLIMIT_AS, (config['limit_memory_hard'], hard))
 
         # SIGXCPU (exceeded CPU time) signal handler will raise an exception.
         r = resource.getrusage(resource.RUSAGE_SELF)
         cpu_time = r.ru_utime + r.ru_stime
+        print 'cpu_time: %s' %cpu_time
         def time_expired(n, stack):
             _logger.info('Worker (%d) CPU time limit (%s) reached.', config['limit_time_cpu'])
             # We dont suicide in such case
             raise Exception('CPU time limit exceeded.')
         signal.signal(signal.SIGXCPU, time_expired)
         soft, hard = resource.getrlimit(resource.RLIMIT_CPU)
+        print 'soft: %s, hard: %s' %(soft, hard)
         resource.setrlimit(resource.RLIMIT_CPU, (cpu_time + config['limit_time_cpu'], hard))
 
     def process_work(self):
@@ -762,7 +766,9 @@ class Worker(object):
                 self.process_limit()
                 self.multi.pipe_ping(self.watchdog_pipe)
                 self.sleep()
+                print 'wake up'
                 self.process_work()
+                print 'work done'
             _logger.info("Worker (%s) exiting. request_count: %s, registry count: %s.",
                          self.pid, self.request_count,
                          len(openerp.modules.registry.RegistryManager.registries))
@@ -787,7 +793,10 @@ class WorkerHTTP(Worker):
         # tolerate broken pipe when the http client closes the socket before
         # receiving the full reply
         try:
+            print 'handle request begin'
+            print 'client type: %s' %type(client)
             self.server.process_request(client, addr)
+            print 'handle request end'
         except IOError, e:
             if e.errno != errno.EPIPE:
                 raise
@@ -796,6 +805,7 @@ class WorkerHTTP(Worker):
     def process_work(self):
         try:
             client, addr = self.multi.socket.accept()
+            print 'client: %s, addr: %s' %(client, addr)
             self.process_request(client, addr)
         except socket.error, e:
             if e[0] not in (errno.EAGAIN, errno.ECONNABORTED):

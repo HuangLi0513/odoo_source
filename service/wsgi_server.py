@@ -202,6 +202,8 @@ def application_unproxied(environ, start_response):
             result = handler(environ, start_response)
             if result is None:
                 continue
+            print 'handler: %s' %handler
+            print 'result: %s' %result
             return result
 
     # We never returned from the loop.
@@ -210,6 +212,10 @@ def application_unproxied(environ, start_response):
     return [response]
 
 def application(environ, start_response):
+    print 'goto application'
+    print 'environ type: %s' %type(environ)
+    print 'environ: %s; start_response: %s' %(environ, start_response)
+    print 'proxy_mode: %s' %config['proxy_mode']
     if config['proxy_mode'] and 'HTTP_X_FORWARDED_HOST' in environ:
         return werkzeug.contrib.fixers.ProxyFix(application_unproxied)(environ, start_response)
     else:

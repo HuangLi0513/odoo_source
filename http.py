@@ -1293,7 +1293,7 @@ class Root(object):
                     if os.path.isfile(manifest_path) and os.path.isdir(path_static):
                         manifest = ast.literal_eval(open(manifest_path).read())
                         manifest['addons_path'] = addons_path
-                        _logger.debug("Loading %s", module)
+                        _logger.info("Loading %s", module)
                         if 'openerp.addons' in sys.modules:
                             m = __import__('openerp.addons.' + module)
                         else:
@@ -1304,8 +1304,10 @@ class Root(object):
 
         if statics:
             _logger.info("HTTP Configuring static files")
+        print 'dispatch old: %s' %self.dispatch
         app = werkzeug.wsgi.SharedDataMiddleware(self.dispatch, statics, cache_timeout=STATIC_CACHE)
         self.dispatch = DisableCacheMiddleware(app)
+        print 'dispatch new: %s' %self.dispatch
 
     def setup_session(self, httprequest):
         # recover or create session
